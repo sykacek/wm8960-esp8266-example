@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <math.h>
 
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
@@ -22,6 +23,8 @@
 #define LED_PIN             (16)
 #define I2C_STRETCH_TICK    (0)
 
+#define AUDIO_FREQ		(441)
+#define SAMPLE_RATE		(46875)
 
 #define WM8960_I2C_ADDRESS	(0x1a)
 
@@ -31,6 +34,15 @@
  * |-------|------------------|---------|----------------------|---------|----------|---- 
  * 
  */
+
+static int16_t buffer[100 * 4];
+
+static void fillBuffer(void){
+	for(int i = 0; i < 200; ++i){
+		buffer[i * 2] = INT16_MAX * sinf((float)i * AUDIO_FREQ / SAMPLE_RATE * 2 * 3.1415);
+		buffer[i * 2 + 1] = buffer[i * 2];
+	}
+}
 
 static WM_STATUS wm_write_reg(uint8_t addr, uint8_t reg, uint16_t data){
 	esp_err_t ret = ESP_OK;
@@ -107,7 +119,9 @@ static void i2s_init(void *params){
 
 	ESP_ERROR_CHECK(i2s_driver_install(I2S_NUM_0, &i2s_config, 0, NULL));
 	ESP_ERROR_CHECK(i2s_set_pin(I2S_NUM_0, &i2s_pin_config));
-	
+
+	i2s_set_clk(I2S_NUM_0, SAMPLE_RATE, 16, I2S_CHANNEL_STEREO);
+
 }
 
 static void nvs_init(void *param){
@@ -128,13 +142,15 @@ void empty_task(void *arg){
 
 static void readTask(void *arg){
 	uint16_t value = 0x01aa;
+	uint8_t led = 1;
 	while(1){
-		gpio_set_level(LED_PIN, 1);
-		wm_write_reg(0x1a, 0x0A, value);
-		ESP_LOGI("debug", "value is %x\n", value);
-		gpio_set_level(LED_PIN, 0);
+		gpio_set_level(LED_PIN, led);
+		led = !led;
 
-		vTaskDelay(1000 / portTICK_PERIOD_MS);
+		ESP_ERROR_CHECK(i2s_write(I2S_NUM_0, (void *)buffer, 800, (size_t *)&value, 1000/portTICK_PERIOD_MS));
+		ESP_LOGI("debug", "i2s write is %x\n", value);
+
+		vTaskDelay(2000 / portTICK_PERIOD_MS);
 	}
 }
 
@@ -151,6 +167,7 @@ static wm8960_t chip = {
 
 void app_main(void){
 	nvs_init(NULL);
+	fillBuffer();
 
 	gpio_set_direction(LED_PIN, GPIO_MODE_OUTPUT);
 	i2c_init(NULL);

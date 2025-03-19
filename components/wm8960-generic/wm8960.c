@@ -2,8 +2,10 @@
 
 // static internal function for writing and creating a memory copy
 static WM_STATUS write(wm8960_t *wm8960, uint8_t reg, uint16_t data){
-	if(wm8960->memory.reg[reg] == WM8960_MEMORY_RESERVED)
+	if(wm8960->memory.reg[reg] == WM8960_MEMORY_RESERVED){
+		printf("error: failed to write to i2c bus\n");
 		return WM_ERROR_NOT_PERMITTED;
+	}
 
 	wm8960->memory.reg[reg] = data;
 
@@ -51,11 +53,14 @@ WM_STATUS WMinit(wm8960_t *wm8960){
 
 	/* init audio playback */
 	if(wm8960->ctl.output){
-		uint16_t flag = WM8960_PWR_DACR_EN | WM8960_PWR_DACL_EN;
+		uint16_t flag = 0x78;
 		WM_ERROR_CHECK(write(wm8960, WM8960_POWER2, flag));
 
 		flag = WM8960_PWR_LOMIX_EN | WM8960_PWR_ROMIX_EN;
 		WM_ERROR_CHECK(write(wm8960, WM8960_POWER3, flag));
+
+		flag = 0xc0;
+		WM_ERROR_CHECK(write(wm8960, WM8960_CLASSD1, flag));
 
 		// set volume to -20 dB
 		flag = WM_GAIN_dB(-20) | WM8960_DACVU;
@@ -65,7 +70,12 @@ WM_STATUS WMinit(wm8960_t *wm8960){
 		// set deemphasis
 		WM_ERROR_CHECK(write(wm8960, WM8960_DACCTL1, wm8960->ctl.output->deemph));
 
-	}
+		if(wm8960->ctl.output->monoMix == WM_TRUE)
+			WM_ERROR_CHECK(write(wm8960, WM8960_ADDCTL1, 0x10));	
+		}
+
+		WM_ERROR_CHECK(write(wm8960, WM8960_3D, ((wm8960->ctl.output->reverb & 0x0F) << 1) | 1));
+
 	
 	return WM_OK;
 }

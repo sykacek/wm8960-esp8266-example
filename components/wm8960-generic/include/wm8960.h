@@ -66,12 +66,12 @@ typedef struct wm8960_input_ctl {
 
 typedef struct wm8960_output_ctl {
 	WM_CHANNEL channnel;
+	WM_BOOL speaker;
+	WM_BOOL headphone;
 	WM_BOOL classD;
-	WM_BOOL autoLevelControl;
-	WM_BOOL dolby;
+	uint8_t reverb;
 	WM_DEEMPH deemph;
 	WM_BOOL monoMix;
-
 	int frequency;
 } wm8960_output_ctl_t;
 
