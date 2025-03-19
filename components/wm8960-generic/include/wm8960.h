@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#define WM_ERROR_CHECK(func)		if(func) { return WM_ERROR_GENERIC}
+#define WM_ERROR_CHECK(func)		if(func) { return WM_ERROR_GENERIC; }
 
 /**
  * @brief uses only input 1, jack is connected to speaker
@@ -20,7 +20,7 @@ typedef enum WM_STATUS {
 	WM_ERROR_GENERIC = 1,
 	WM_ERROR_INVALID_PARAM = 2,
 	WM_ERROR_NULLPTR = 3,
-	WM_ERROR_NOT_PERMMITED = 4,
+	WM_ERROR_NOT_PERMITTED = 4,
 } WM_STATUS;
 
 typedef enum WM_CHANNEL {
@@ -42,12 +42,12 @@ typedef enum WM_DEEMPH {
 } WM_DEEMPH;
 
 // enumerations for inverting dac channels polarity 
-typdef enum WM_POLARITY {
+typedef enum WM_POLARITY {
 	WM_DACL_EN = (1 << 5),
 	WM_DACR_EN = (1 << 6),
 	WM_DACLR_EN = (1 << 5) | (1 << 6),
 	WM_DACLR_DIS = 0x0,
-}
+} WM_POLARITY;
 
 /* struct for storing memory copy since wm8960 does not support reading registers
 *includes reserved registers

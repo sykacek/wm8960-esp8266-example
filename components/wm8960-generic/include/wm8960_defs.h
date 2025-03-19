@@ -170,7 +170,8 @@
 //deemphasis
 
 #define WM8960_MEMORY_RESERVED		(0xFFFF)
-#define WM8960_MEMORY_DEFAULT		{.reg[0x0] = 0x0097, \
+#define WM8960_MEMORY_DEFAULT		(regmap_t){ \
+					.reg[0x0] = 0x0097, \
 					.reg[0x1] = 0x0097, \
 					.reg[0x2] = 0x0000, \
 					.reg[0x3] = 0x0000, \
@@ -225,7 +226,7 @@
 					.reg[0x34] = 0x0008, \
 					.reg[0x35] = 0x0031, \
 					.reg[0x36] = 0x0026, \
-					.reg[0x37] = 0x00e9 }
+					.reg[0x37] = 0x00e9, }
 
 
 #endif

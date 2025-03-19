@@ -143,8 +143,6 @@ static wm8960_t chip = {
 	.delay_ms = freertos_delay_ms,
 	.ctl = {
 		.addr = 0x1A,
-		.audio_freq = 48000,
-		.master = NULL,
 		.output = NULL,
 		.input = NULL,
 	},

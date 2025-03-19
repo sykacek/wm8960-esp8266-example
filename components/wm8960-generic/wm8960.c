@@ -2,17 +2,17 @@
 
 // static internal function for writing and creating a memory copy
 static WM_STATUS write(wm8960_t *wm8960, uint8_t reg, uint16_t data){
-	if(wm8960->memory.reg[reg] == WM_MEMORY_RESERVED)
+	if(wm8960->memory.reg[reg] == WM8960_MEMORY_RESERVED)
 		return WM_ERROR_NOT_PERMITTED;
 
 	wm8960->memory.reg[reg] = data;
 
-	return wm8960->write(wm8960->ctl.addr, reg, data);
+	return wm8960->write_reg(wm8960->ctl.addr, reg, data);
 }
 
 WM_STATUS WMreset(wm8960_t *wm8960){
 	// no need to create a memory copy
-	WM_ERROR_CHECK(wm8960->write(wm8960->ctl.addr, WM8960_RESET, 0x01));
+	WM_ERROR_CHECK(wm8960->write_reg(wm8960->ctl.addr, WM8960_RESET, 0x01));
 	wm8960->memory = WM8960_MEMORY_DEFAULT;
 
 	return WM_OK;
@@ -32,41 +32,38 @@ WM_STATUS WMinit(wm8960_t *wm8960){
 		return WM_ERROR_NULLPTR;
 	}
 
-	if(wm8960->ctl->input == NULL && wm8960->ctl->output){
+	if(wm8960->ctl.input == NULL && wm8960->ctl.output){
 		fprintf(stderr, "output and input are not defined, nothing to do, aborting\n");
 		return WM_ERROR_INVALID_PARAM;
 	}
 
-	WM_STATUS ret = WM_OK;
-	ret = wm8960->write_reg(wm8960->ctl.addr, WM8960_RESET, 0x01);
+	WM_ERROR_CHECK(wm8960->write_reg(wm8960->ctl.addr, WM8960_RESET, 0x01));
 		
 	/* init audio recording */
-	if(wm8960->ctl->input){
+	if(wm8960->ctl.input){
 		// start power
 		uint16_t flag = WM8960_PWR_VREF_EN | WM8960_PWR_ADCL_EN | WM8960_PWR_ADCR_EN;
-		ESP_ERROR_CHECK(write(wm8960, WM896_POWER1, flag));
+		WM_ERROR_CHECK(write(wm8960, WM8960_POWER1, flag));
 
-		flag = WM8960_PWR_LMIC_EN | WM8960_RMIC_EN;
-		ESP_ERROR_CHECK(write(wm8960, WM896_POWER3, flag));
+		flag = WM8960_PWR_LMIC_EN | WM8960_PWR_RMIC_EN;
+		WM_ERROR_CHECK(write(wm8960, WM8960_POWER3, flag));
 	}
 
 	/* init audio playback */
-	if(wm8960->ctl->output){
+	if(wm8960->ctl.output){
 		uint16_t flag = WM8960_PWR_DACR_EN | WM8960_PWR_DACL_EN;
-		ESP_ERROR_CHECK(write(wm8960, WM896_POWER2, flag));
+		WM_ERROR_CHECK(write(wm8960, WM8960_POWER2, flag));
 
-		flag = WM8960_PWR_LOMIX_EN | WM8960_ROMIX_EN;
-		ESP_ERROR_CHECK(write(wm8960, WM896_POWER3, flag));
+		flag = WM8960_PWR_LOMIX_EN | WM8960_PWR_ROMIX_EN;
+		WM_ERROR_CHECK(write(wm8960, WM8960_POWER3, flag));
 
 		// set volume to -20 dB
-		flag = WM_GAIN_dB(-20) | WM8960_DACUV;
-		ESP_ERROR_CHECK(write(wm8960, WM8960_LDAC, flag));
-		ESP_ERROR_CHECK(write(wm8960, WM8960_RDAC, flag));
+		flag = WM_GAIN_dB(-20) | WM8960_DACVU;
+		WM_ERROR_CHECK(write(wm8960, WM8960_LDAC, flag));
+		WM_ERROR_CHECK(write(wm8960, WM8960_RDAC, flag));
 
 		// set deemphasis
-		ESP_ERROR_CHECK(write(wm8960, WM8960_DACCTL1, wm8960->ctl->output.deemph));
-
-		if(wm8960->ctl->)
+		WM_ERROR_CHECK(write(wm8960, WM8960_DACCTL1, wm8960->ctl.output->deemph));
 
 	}
 	
