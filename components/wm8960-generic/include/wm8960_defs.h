@@ -122,8 +122,8 @@
 #define WM8960_PWR_AINR_DIS		(0x00)
 #define WM8960_PWR_AINL_ENBALE		(0x20)
 #define WM8960_PWR_AINL_DIS		(0x00)
-#define WM8960_PWR_VREF_EN		(0x40)
-#define WM8960_PWR_VREF_DIS		(0x00)
+#define WM8960_VREF_EN			(0x40)
+#define WM8960_VREF_DIS			(0x00)
 #define WM8960_VMID_DIS			(0x00)
 #define WM8960_VMID_NORMAL		(0x80)		//2x 50k ohm
 #define WM8960_VMID_STANDBY		(0x100)		//2x 250k ohm
@@ -165,7 +165,12 @@
  */
 #define WM_GAIN_dB(dB)			((uint8_t) (2 * dB + 255))
 
+// DAC defines
 #define WM8960_DACVU			(0x100)
+
+// Left Mixer 0x22
+#define WM8960_LMIX_LD2LO
+
 
 //deemphasis
 

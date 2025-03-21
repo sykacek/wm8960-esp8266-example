@@ -39,8 +39,11 @@ WM_STATUS WMinit(wm8960_t *wm8960){
 		return WM_ERROR_INVALID_PARAM;
 	}
 
-	WM_ERROR_CHECK(wm8960->write_reg(wm8960->ctl.addr, WM8960_RESET, 0x01));
+	WM_ERROR_CHECK(write(wm8960->ctl.addr,  \ 
+			WM8960_POWER1, WM8960_VMID_NORMAL | WM8960_VREF_EN));
 		
+	WM_ERROR_CHECK()
+
 	/* init audio recording */
 	if(wm8960->ctl.input){
 		// start power
@@ -72,10 +75,9 @@ WM_STATUS WMinit(wm8960_t *wm8960){
 
 		if(wm8960->ctl.output->monoMix == WM_TRUE)
 			WM_ERROR_CHECK(write(wm8960, WM8960_ADDCTL1, 0x10));	
-		}
 
 		WM_ERROR_CHECK(write(wm8960, WM8960_3D, ((wm8960->ctl.output->reverb & 0x0F) << 1) | 1));
-
+	}
 	
 	return WM_OK;
 }
