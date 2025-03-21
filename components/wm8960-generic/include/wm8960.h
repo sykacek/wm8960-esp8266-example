@@ -34,6 +34,7 @@ typedef enum WM_BOOL {
 	WM_FALSE = 0,
 } WM_BOOL;
 
+// deephasis bit flags for register 0x5
 typedef enum WM_DEEMPH {
 	WM_DEEMPH_48K = 0x6,
 	WM_DEEMPH_41K = 0x4,
@@ -56,6 +57,12 @@ typedef struct regmap {
 	uint16_t reg[0x38]; 
 } regmap_t;
 
+typedef struct reverb {
+	WM_BOOL highPass;
+	WM_BOOL lowPass;
+	uint8_t depth;
+} reverb_t;
+
 typedef struct wm8960_input_ctl {
 	WM_CHANNEL channnel;
 	WM_BOOL noiseGate;
@@ -72,6 +79,7 @@ typedef struct wm8960_output_ctl {
 	uint8_t reverb;
 	WM_DEEMPH deemph;
 	WM_BOOL monoMix;
+	reverb_t *reverb;
 	int frequency;
 } wm8960_output_ctl_t;
 

@@ -39,28 +39,30 @@ WM_STATUS WMinit(wm8960_t *wm8960){
 		return WM_ERROR_INVALID_PARAM;
 	}
 
-	WM_ERROR_CHECK(write(wm8960->ctl.addr,  \ 
-			WM8960_POWER1, WM8960_VMID_NORMAL | WM8960_VREF_EN));
+	WM_ERROR_CHECK(write(wm8960, WM8960_POWER1, \
+			WM8960_VMID_NORMAL | WM8960_VREF));
 		
-	WM_ERROR_CHECK()
-
 	/* init audio recording */
 	if(wm8960->ctl.input){
 		// start power
-		uint16_t flag = WM8960_PWR_VREF_EN | WM8960_PWR_ADCL_EN | WM8960_PWR_ADCR_EN;
+		uint16_t flag = WM8960_PWR_VREF | WM8960_PWR_ADCL | WM8960_PWR_ADCR;
 		WM_ERROR_CHECK(write(wm8960, WM8960_POWER1, flag));
 
-		flag = WM8960_PWR_LMIC_EN | WM8960_PWR_RMIC_EN;
+		flag = WM8960_PWR_LMIC | WM8960_PWR_RMIC;
 		WM_ERROR_CHECK(write(wm8960, WM8960_POWER3, flag));
 	}
 
 	/* init audio playback */
 	if(wm8960->ctl.output){
-		uint16_t flag = 0x78;
+		uint16_t flag = WM8960_PWR_DACL | WM8960_PWR_DACR;
 		WM_ERROR_CHECK(write(wm8960, WM8960_POWER2, flag));
 
-		flag = WM8960_PWR_LOMIX_EN | WM8960_PWR_ROMIX_EN;
+		flag = WM8960_PWR_LOMIX | WM8960_PWR_RMIX;
 		WM_ERROR_CHECK(write(wm8960, WM8960_POWER3, flag));
+
+		flag = WM8960_MIX_D2O | WM8960_MIX_NEG_21dB;
+		WM_ERROR_CHECK(write(wm8960, WM8960_LOUTMIX, flag)))
+		WM_ERROR_CHECK(write(wm8960, WM8960_ROUTMIX, flag)))
 
 		flag = 0xc0;
 		WM_ERROR_CHECK(write(wm8960, WM8960_CLASSD1, flag));
@@ -74,9 +76,19 @@ WM_STATUS WMinit(wm8960_t *wm8960){
 		WM_ERROR_CHECK(write(wm8960, WM8960_DACCTL1, wm8960->ctl.output->deemph));
 
 		if(wm8960->ctl.output->monoMix == WM_TRUE)
-			WM_ERROR_CHECK(write(wm8960, WM8960_ADDCTL1, 0x10));	
+			WM_ERROR_CHECK(write(wm8960, WM8960_ADDCTL1, WM8960_MIX_MONO));	
 
-		WM_ERROR_CHECK(write(wm8960, WM8960_3D, ((wm8960->ctl.output->reverb & 0x0F) << 1) | 1));
+		if(wm8960->ctl.output.reverb != NULL){
+			flag = 0x1 | (((0x0F) && wm8960->ctl.output.reverb.depth) << 1);
+			if(wm8960->ctl.output.reverb->highPass == WM_TRUE)
+				flag |= WM8960_3D_HIGHPASS;
+
+			if(wm8960->ctl.output.reverb->lowPass == WM_TRUE)
+				flag |= WM8960_3D_LOWPASS;
+
+			WM_ERROR_CHECK(write(wm8960, WM8960_3D, flag))
+		}
+
 	}
 	
 	return WM_OK;

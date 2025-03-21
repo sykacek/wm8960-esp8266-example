@@ -110,69 +110,63 @@
 
 /* Power Managament flags */
 //WM8960_POWER1		0x19
-#define WM8960_MASTER_CLOCK_EN		(0x01)
-#define WM8960_MASTER_CLOCK_DIS		(0x00)
-#define WM8960_PWR_MIC_BIAS_EN		(0x02)
-#define WM8960_PWR_MIC_BIAS_DIS		(0x00)
-#define WM8960_PWR_ADCR_EN		(0x04)
-#define WM8960_PWR_ADCR_DIS		(0x00)
-#define WM8960_PWR_ADCL_EN		(0x08)
-#define WM8960_PWR_ADCL_DIS		(0x00)
-#define WM8960_PWR_AINR_ENBALE		(0x10)
-#define WM8960_PWR_AINR_DIS		(0x00)
-#define WM8960_PWR_AINL_ENBALE		(0x20)
-#define WM8960_PWR_AINL_DIS		(0x00)
-#define WM8960_VREF_EN			(0x40)
-#define WM8960_VREF_DIS			(0x00)
-#define WM8960_VMID_DIS			(0x00)
+#define WM8960_MASTER_CLOCK		(0x01)
+#define WM8960_PWR_MIC_BIAS		(0x02)
+#define WM8960_PWR_ADCR			(0x04)
+#define WM8960_PWR_ADCL			(0x08)
+#define WM8960_PWR_AINR			(0x10)
+#define WM8960_PWR_AINL			(0x20)
+#define WM8960_VREF			(0x40)
 #define WM8960_VMID_NORMAL		(0x80)		//2x 50k ohm
 #define WM8960_VMID_STANDBY		(0x100)		//2x 250k ohm
 #define WM8960_VMID_STARTUP		(0x180)		//2x 5k ohm
 
 //WM8960_POWER2		0x1a
-#define WM8960_PLL_EN			(0x01)
-#define WM8960_PLL_DIS			(0x00)
-#define WM8960_PWR_OUT3_EN		(0x02)
-#define WM8960_PWR_OUT3_DIS		(0x00)
-#define WM8960_PWR_SPKR_EN		(0x08)
-#define WM8960_PWR_SPKR_DIS		(0x00)
-#define WM8960_PWR_SPKL_EN		(0x10)
-#define WM8960_PWR_SPKL_DIS		(0x00)
-#define WM8960_PWR_ROUT1_EN		(0x20)
-#define WM8960_PWR_ROUT1_DIS		(0x00)
-#define WM8960_PWR_LOUT1_EN		(0x40)
-#define WM8960_PWR_LOUT1_DIS		(0x00)
-#define WM8960_PWR_DACR_EN		(0x80)
-#define WM8960_PWR_DACR_DIS		(0x00)
-#define WM8960_PWR_DACL_EN		(0x100)
-#define WM8960_PWR_DACL_DIS		(0x00)
+#define WM8960_PWR_PLL			(0x01)
+#define WM8960_PWR_OUT3			(0x02)
+#define WM8960_PWR_SPKR			(0x08)
+#define WM8960_PWR_SPKL			(0x10)
+#define WM8960_PWR_ROUT1		(0x20)
+#define WM8960_PWR_LOUT1		(0x40)
+#define WM8960_PWR_DACR			(0x80)
+#define WM8960_PWR_DACL			(0x100)
 
 //WM8960_POWER3		0x2f
-#define WM8960_PWR_ROMIX_EN		(0x04)
-#define WM8960_PWR_ROMIX_DIS		(0x00)
-#define WM8960_PWR_LOMIX_EN		(0x08)
-#define WM8960_PWR_LOMIX_DIS		(0x00)
-#define WM8960_PWR_RMIC_EN		(0x10)
-#define WM8960_PWR_RMIC_DIS		(0x00)
-#define WM8960_PWR_LMIC_EN		(0x20)
-#define WM8960_PWR_LMIC_DIS		(0x00)
+#define WM8960_PWR_RMIX			(0x04)
+#define WM8960_PWR_LMIX			(0x08)
+#define WM8960_PWR_RMIC			(0x10)
+#define WM8960_PWR_LMIC			(0x20)
 
-/**
- * @brief macro for converting dB gain to 8 bit register value
- * 	gain is in range -127 dB to 0 dB (-127 dB = mute)
- *	dB = 0.5 x (reg_value - 255 )
- *	overflow is guaranteed for values out of the range
- */
-#define WM_GAIN_dB(dB)			((uint8_t) (2 * dB + 255))
-
-// DAC defines
+// DAC Volume register 0xA 0xB
+#define WM_DAC_GAIN(dB)			((uint8_t) (2 * dB + 255))
 #define WM8960_DACVU			(0x100)
 
-// Left Mixer 0x22
-#define WM8960_LMIX_LD2LO
+// Left + Right Mixer 0x22, 0x25
+/* values are negative */
+#define WM8960_MIX_0dB			(0x00)
+#define WM8960_MIX_NEG_3dB		(0x10)
+#define WM8960_MIX_NEG_6dB		(0x20)
+#define WM8960_MIX_NEG_9dB		(0x30)
+#define WM8960_MIX_NEG_12dB		(0x40)
+#define WM8960_MIX_NEG_15dB		(0x50)
+#define WM8960_MIX_NEG_18dB		(0x60)
+#define WM8960_MIX_NEG_21dB		(0x70)
 
+#define WM8960_MIX_I2O			(0x80)	// input 3 to mixer
+#define WM8960_MIX_D2O			(0x100)	// dac to mixer 
 
-//deemphasis
+// 0x17
+#define WM8960_MIX_MONO			(0x10)
+
+// 0x26, 0x27
+#define WM8960_2MO			(0x80)
+
+// 0x5
+#define WM8960_DAC_DIV_2		(0x80)	//6 dB attenuate
+
+// 3D enhacement
+#define WM8960_3D_HIGHPASS		(0x20)
+#define WM8960_3D_LOWHPASS		(0x40)
 
 #define WM8960_MEMORY_RESERVED		(0xFFFF)
 #define WM8960_MEMORY_DEFAULT		(regmap_t){ \
