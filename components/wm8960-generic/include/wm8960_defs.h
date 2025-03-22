@@ -173,7 +173,8 @@
 #define WM8960_PWR_DACL			(0x100)
 
 #define WM8960_POWER2_DEFAULT		(WM8960_PWR_PLL | WM8960_PWR_DACR | \
-					WM8960_PWR_DACL)
+					WM8960_PWR_DACL | WM8960_PWR_LOUT1 | \
+					WM8960_PWR_ROUT1)
 
 
 //WM8960_POWER3		0x2f
@@ -185,9 +186,24 @@
 #define WM8960_POWER3_DEFAULT_IN	(WM8960_PWR_RMIC | WM8960_PWR_LMIC)
 #define WM8960_POWER3_DEFAULT_OUT	(WM8960_PWR_LMIX | WM8960_PWR_RMIX)
 
+/* WM8960_LINVOL1, RINVOL2	0x01, 0x02*/
+#define WM8960_PGA_ZERO_CROSS		(0x40)
+#define WM8960_PGA_MUTE			(0x80)
+#define WM8960_PGA_VU			(0x100)
+
+/* range from -17.25 dB to 30 dB */
+#define WM_PGA_GAIN(dB)			((uint8_t)(dB / 0.75f) + 23)
+
+/* WM8960_LOUT1, ROUT1		0x02, 0x03 */
+#define WM8960_OUT_ZERO_CROSS		(0x80)
+#define WM8960_HEADPHONE_VU		(0x100)
+
+/* range from 6 dB to -73 dB */
+#define WM_OUT_GAIN(dB)			((uint8_t)((121 + dB) & 0x7f))
+
 // DAC Volume register 0xA 0xB
-#define WM_DAC_GAIN(dB)			((uint8_t) (2 * dB + 255))
-#define WM8960_DACVU			(0x100)
+#define WM_DAC_GAIN(dB)			((uint8_t)((2 * dB + 255) & 0xff))
+#define WM8960_DAC_VU			(0x100)
 
 // Left + Right Mixer 0x22, 0x25
 #define WM8960_MIX_0dB			(0x00)
@@ -199,7 +215,7 @@
 #define WM8960_MIX_NEG_18dB		(0x60)
 #define WM8960_MIX_NEG_21dB		(0x70)
 
-#define WM_MIX_GAIN(dB)			((uint8_t) (dB / (-3)))
+#define WM_INPUT2MIX_GAIN(dB)		((uint8_t) (dB / (-3)))
 
 #define WM8960_MIX_I2O			(0x80)	// input 3 to mixer
 #define WM8960_MIX_D2O			(0x100)	// dac to mixer 
@@ -217,7 +233,7 @@
 /* deemphasis enums */
 #define WM8960_DACMU			(0x08)
 /* polarity enums */
-#define WM8960_DAC_DIV_2		(0x80)	//6 dB attenuate
+#define WM8960_DAC_ATTEN		(0x80)	//6 dB attenuate
 
 // ADCDACCTL2 0x06
 #define WM8960_DACSLOPE			(0x02)
@@ -225,7 +241,7 @@
 #define WM8960_DACSMM			(0x08)	//DAC soft mute mode
 /* polarity enums */
 
-// 0x7 IFACE1
+// WM8960_IFACE1		0x07
 /* format enums */
 /* word lengthenums */
 #define WM8960_LRP			(0x10)	//LRCLK polarity
@@ -234,13 +250,22 @@
 #define WM8960_BCLKINV			(0x80)
 #define WM8960_ADCSWAP			(0x100)
 
-// 3D enhacement
+// WM8960_IFACE2		0x09
+#define WM8960_LOOPBACK			(0x01)
+#define WM8960_ALRCK_GPIO		(0x40)
+
+
+// WM8960_3D 		3D enhacement
 #define WM8960_3D_HIGHPASS		(0x20)
 #define WM8960_3D_LOWPASS		(0x40)
 
 /* WM8960_CLASSD2		0x33 */
 #define WM8960_DCGAIN_MAX		(0x24)
 #define WM8960_ACGAIN_MAX		(0x05)
+
+/* WM8960_BYPASS1 + WM8960_BYPASS2	0x2d, 0x2e */
+#define WM8960_BOOST2MIX		(0x80)
+#define WM_MIX_GAIN(dB)			((uint8_t)((dB / -3) << 4))
 
 #define WM8960_MEMORY_RESERVED		(0xFFFF)
 #define WM8960_MEMORY_DEFAULT		(regmap_t){ \

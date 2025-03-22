@@ -64,8 +64,14 @@ typedef enum WM_DATA_FMT {
 	WM_FMT_DSP = 0x03,
 } WM_DATA_FMT;
 
+typedef enum WM_COMPAND {
+	WM_COMPAND_MICRO = 0x2,
+	WM_COMPAND_A = 0x3,
+	WM_COMPAND_NONE = 0x0,
+} WM_COMPAND;
+
 /* struct for storing memory copy since wm8960 does not support reading registers
-*includes reserved registers
+* includes reserved registers
 */
 typedef struct regmap {
 	uint16_t reg[0x38]; 
@@ -80,10 +86,11 @@ typedef struct reverb {
 
 typedef struct wm8960_input_ctl {
 	WM_CHANNEL channnel;
-	WM_BOOL noiseGate;
 	WM_POLARITY polarity;
+	WM_BOOL noiseGate;
 	uint8_t pga;
 	WM_BOOL acl;		//automatic level control
+	WM_COMPAND compander;
 } wm8960_input_ctl_t;
 
 typedef struct wm8960_output_ctl {
@@ -94,7 +101,7 @@ typedef struct wm8960_output_ctl {
 	WM_POLARITY polarity;
 	WM_BOOL monoMix;
 	reverb_t reverb;
-	int frequency;
+	WM_COMPAND compander;
 } wm8960_output_ctl_t;
 
 typedef struct wm8960_ctl {
@@ -102,6 +109,7 @@ typedef struct wm8960_ctl {
 	wm8960_input_ctl_t *input;
 	wm8960_output_ctl_t *output;
 	WM_DATA_FMT fmt;
+	WM_WORD_LENGTH word;
 } wm8960_ctl_t;
 
 typedef struct wm8960 {
@@ -140,7 +148,7 @@ WM_STATUS WMsetMixVol(wm8960_t *wm8960, uint16_t vol);
 WM_STATUS WMsetDACVol(wm8960_t *wm8960, uint8_t vol);
 
 WM_STATUS WMsetMixBoost(wm8960_t *wm8960, uint8_t boost);
-WM_STATUS WMsetDACaAtten(wm8960_t *wm8960)
+WM_STATUS WMsetDACaAtten(wm8960_t *wm8960);
 
 /**
  * @brief read data from channel
