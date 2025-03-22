@@ -26,7 +26,7 @@ typedef enum WM_STATUS {
 typedef enum WM_CHANNEL {
 	WM_CHANNEL_LEFT = 0x1,
 	WM_CHANNEL_RIGHT = 0x2,
-	WM_CHANNEL_BOTH	= 0x4,
+	WM_CHANNEL_STEREO = 0x4,
 } WM_CHANNEL;
 
 typedef enum WM_BOOL {
@@ -84,14 +84,28 @@ typedef struct reverb {
 	uint8_t depth;
 } reverb_t;
 
+#define WM8960_REVERB_DEFAULT (reverb_t) { \
+	.enable = WM_FALSE, \
+	.highPass = WM_FALSE, \
+	.lowPass = WM_FALSE, \
+	.depth = 0, }
+
 typedef struct wm8960_input_ctl {
-	WM_CHANNEL channnel;
+	WM_CHANNEL channel;
 	WM_POLARITY polarity;
 	WM_BOOL noiseGate;
 	uint8_t pga;
 	WM_BOOL acl;		//automatic level control
 	WM_COMPAND compander;
 } wm8960_input_ctl_t;
+
+#define WM8960_INPUT_CTL_DEFAULT	(wm8960_input_ctl_t) { \
+	.channel = WM_CHANNEL_STEREO, \
+	.polarity = WM_POLARITY_NORMAL, \
+	.noiseGate = WM_FALSE, \
+	.pga = 0, \
+	.acl = WM_FALSE, \
+	.compander = WM_COMPAND_NONE, }
 
 typedef struct wm8960_output_ctl {
 	WM_CHANNEL channnel;
@@ -104,6 +118,16 @@ typedef struct wm8960_output_ctl {
 	WM_COMPAND compander;
 } wm8960_output_ctl_t;
 
+#define WM8960_OUTPUT_CTL_DEFAULT	{ \
+	.channnel = WM_CHANNEL_STEREO, \
+	.headphone = WM_TRUE, \
+	.classD = WM_TRUE, \
+	.deemph = WM_DEEMPH_48K, \
+	.polarity = WM_POLARITY_NORMAL, \
+	.monoMix = WM_FALSE, \
+	.reverb = WM8960_REVERB_DEFAULT, \
+	.compander = WM_COMPAND_NONE, }
+
 typedef struct wm8960_ctl {
 	uint8_t addr;			// 2 - wire address (0x34 default) (0x34 >> 1 = 0x1a) 
 	wm8960_input_ctl_t *input;
@@ -111,6 +135,13 @@ typedef struct wm8960_ctl {
 	WM_DATA_FMT fmt;
 	WM_WORD_LENGTH word;
 } wm8960_ctl_t;
+
+#define WM8960_CTL_DEFAULT		(wm8960_ctl_t) { \
+	.addr = 0x1a, \
+	.input = WM8960_INPUT_CTL_DEFAULT, \
+	.output = WM8960_OUTPUT_CTL_DEFAULT, \
+	.word = WM_WORD_16BIT, \
+	.fmt = WM_FMT_I2S, }
 
 typedef struct wm8960 {
 	wm8960_ctl_t ctl;		//control struct

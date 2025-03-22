@@ -154,13 +154,18 @@ static void readTask(void *arg){
 	}
 }
 
+static wm8960_input_ctl_t input_ctl = WM8960_INPUT_CTL_DEFAULT;
+static wm8960_output_ctl_t output_ctl = WM8960_OUTPUT_CTL_DEFAULT;
+
 static wm8960_t chip = {
 	.write_reg = wm_write_reg,
 	.delay_ms = freertos_delay_ms,
 	.ctl = {
 		.addr = 0x1a,
-		.output = NULL,
-		.input = NULL,
+		.word = WM_WORD_16BIT,
+		.fmt = WM_FMT_I2S,
+		.input = &input_ctl,
+		.output = &output_ctl,
 	},
 	.memory = WM8960_MEMORY_DEFAULT,	
 };

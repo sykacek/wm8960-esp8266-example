@@ -326,11 +326,4 @@
 					.reg[0x36] = 0x0026, \
 					.reg[0x37] = 0x00e9, }
 
-#define WM8960_REVERB_DEFAULT (reverb_t) { \
-					.enable = WM_FALSE, \
-					.highPass = WM_FALSE, \
-					.lowPass = WM_FALSE, \
-					.depth = 0, }
-
-
 #endif
