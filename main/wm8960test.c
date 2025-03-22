@@ -158,7 +158,7 @@ static wm8960_t chip = {
 	.write_reg = wm_write_reg,
 	.delay_ms = freertos_delay_ms,
 	.ctl = {
-		.addr = 0x1A,
+		.addr = 0x1a,
 		.output = NULL,
 		.input = NULL,
 	},

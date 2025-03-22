@@ -12,6 +12,10 @@ static WM_STATUS write(wm8960_t *wm8960, uint8_t reg, uint16_t data){
 	return wm8960->write_reg(wm8960->ctl.addr, reg, data);
 }
 
+static uint16_t read(wm8960_t *wm8960, uint8_t reg){
+	return wm8960->memory.reg[reg];
+}
+
 WM_STATUS WMreset(wm8960_t *wm8960){
 	// no need to create a memory copy
 	WM_ERROR_CHECK(wm8960->write_reg(wm8960->ctl.addr, WM8960_RESET, 0x01));
@@ -39,13 +43,22 @@ WM_STATUS WMinit(wm8960_t *wm8960){
 		return WM_ERROR_INVALID_PARAM;
 	}
 
-	WM_ERROR_CHECK(write(wm8960, WM8960_POWER1, \
-			WM8960_VMID_NORMAL | WM8960_VREF));
-		
+	/* power up */
+	WM_ERROR_CHECK(write(wm8960, WM8960_POWER1, WM8960_POWER1_DEFAULT));
+
+	/* start clocks with 24 MHz crystal, refer to documentation */
+	WM_ERROR_CHECK(write(wm8960, WM8960_PLL1, 0x08));
+	WM_ERROR_CHECK(write(wm8960, WM8960_PLL2, 0x31));
+	WM_ERROR_CHECK(write(wm8960, WM8960_PLL3, 0x26));
+	WM_ERROR_CHECK(write(wm8960, WM8960_PLL4, 0xe8));
+
+	/* audio fmt */
+	uint16_t flag;
+
 	/* init audio recording */
 	if(wm8960->ctl.input){
 		// start power
-		uint16_t flag = WM8960_VREF | WM8960_PWR_ADCL | WM8960_PWR_ADCR;
+		flag = WM8960_VREF | WM8960_PWR_ADCL | WM8960_PWR_ADCR;
 		WM_ERROR_CHECK(write(wm8960, WM8960_POWER1, flag));
 
 		flag = WM8960_PWR_LMIC | WM8960_PWR_RMIC;
@@ -54,41 +67,50 @@ WM_STATUS WMinit(wm8960_t *wm8960){
 
 	/* init audio playback */
 	if(wm8960->ctl.output){
-		uint16_t flag = WM8960_PWR_DACL | WM8960_PWR_DACR;
+		flag = WM8960_POWER2_DEFAULT;
 		WM_ERROR_CHECK(write(wm8960, WM8960_POWER2, flag));
 
-		flag = WM8960_PWR_LMIX | WM8960_PWR_RMIX;
+		flag = WM8960_POWER3_DEFAULT_OUT;
 		WM_ERROR_CHECK(write(wm8960, WM8960_POWER3, flag));
 
-		flag = WM8960_MIX_D2O | WM8960_MIX_NEG_21dB;
+		flag = WM8960_MIX_D2O | WM_MIX_GAIN(-21);
 		WM_ERROR_CHECK(write(wm8960, WM8960_LOUTMIX, flag));
 		WM_ERROR_CHECK(write(wm8960, WM8960_ROUTMIX, flag));
 
-		flag = 0xc0;
-		WM_ERROR_CHECK(write(wm8960, WM8960_CLASSD1, flag));
+		if(wm8960->ctl.output->classD == WM_TRUE){
+			flag = (wm8960->ctl.output->channnel << 6);
+			WM_ERROR_CHECK(write(wm8960, WM8960_CLASSD1, flag));
+
+		}
 
 		// set volume to -20 dB
-		flag = WM_GAIN_dB(-20) | WM8960_DACVU;
+		flag = WM_DAC_GAIN(-20) | WM8960_DACVU;
 		WM_ERROR_CHECK(write(wm8960, WM8960_LDAC, flag));
 		WM_ERROR_CHECK(write(wm8960, WM8960_RDAC, flag));
 
-		// set deemphasis
-		WM_ERROR_CHECK(write(wm8960, WM8960_DACCTL1, wm8960->ctl.output->deemph));
+		// set deemphasis and unmute
+		flag = read(wm8960, WM8960_DACCTL1);
+		flag |= wm8960->ctl.output->deemph;
+		flag &= ~(WM8960_DACMU);
+		WM_ERROR_CHECK(write(wm8960, WM8960_DACCTL1, flag));
 
-		//monomix?
-		if(wm8960->ctl.output->monoMix == WM_TRUE)
+		if(wm8960->ctl.output->monoMix == WM_TRUE){
 			WM_ERROR_CHECK(write(wm8960, WM8960_ADDCTL1, WM8960_MIX_MONO));	
+		}
 
 		// set reverb
-		flag = (wm8960->ctl.output->reverb.enable) |  \
-			(((0x0F) & wm8960->ctl.output->reverb.depth) << 1);
-		if(wm8960->ctl.output->reverb.highPass == WM_TRUE)
-			flag |= WM8960_3D_HIGHPASS;
+		if(wm8960->ctl.output->reverb.enable == WM_TRUE){
+			flag = (((0x0F) & wm8960->ctl.output->reverb.depth) << 1);
 
-		if(wm8960->ctl.output->reverb.lowPass == WM_TRUE)
-			flag |= WM8960_3D_LOWPASS;
+			if(wm8960->ctl.output->reverb.highPass == WM_TRUE)
+				flag |= WM8960_3D_HIGHPASS;
 
-		WM_ERROR_CHECK(write(wm8960, WM8960_3D, flag));
+			if(wm8960->ctl.output->reverb.lowPass == WM_TRUE)
+				flag |= WM8960_3D_LOWPASS;
+
+			WM_ERROR_CHECK(write(wm8960, WM8960_3D, flag));
+
+		}
 
 	}
 	

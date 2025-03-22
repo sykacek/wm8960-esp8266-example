@@ -81,6 +81,7 @@ typedef struct reverb {
 typedef struct wm8960_input_ctl {
 	WM_CHANNEL channnel;
 	WM_BOOL noiseGate;
+	WM_POLARITY polarity;
 	uint8_t pga;
 	WM_BOOL acl;		//automatic level control
 } wm8960_input_ctl_t;
@@ -90,15 +91,17 @@ typedef struct wm8960_output_ctl {
 	WM_BOOL headphone;
 	WM_BOOL classD;
 	WM_DEEMPH deemph;
+	WM_POLARITY polarity;
 	WM_BOOL monoMix;
 	reverb_t reverb;
 	int frequency;
 } wm8960_output_ctl_t;
 
 typedef struct wm8960_ctl {
-	uint8_t addr;			// 2 - wire address (0x34 default) 
+	uint8_t addr;			// 2 - wire address (0x34 default) (0x34 >> 1 = 0x1a) 
 	wm8960_input_ctl_t *input;
 	wm8960_output_ctl_t *output;
+	WM_DATA_FMT fmt;
 } wm8960_ctl_t;
 
 typedef struct wm8960 {
@@ -132,7 +135,12 @@ WM_STATUS WMreset(wm8960_t *wm8960);
 
 WM_STATUS WMsetPLL(wm8960_t *wm8960, uint8_t integerPart, uint32_t fractionalPart);
 
-WM_STATUS WMsetMixVolume(wm8960_t *wm8960, uint16_t flags);
+WM_STATUS WMsetMixVol(wm8960_t *wm8960, uint16_t vol);
+
+WM_STATUS WMsetDACVol(wm8960_t *wm8960, uint8_t vol);
+
+WM_STATUS WMsetMixBoost(wm8960_t *wm8960, uint8_t boost);
+WM_STATUS WMsetDACaAtten(wm8960_t *wm8960)
 
 /**
  * @brief read data from channel
@@ -154,9 +162,6 @@ WM_STATUS WMmuteOutputChannel(wm8960_t *wm8960, WM_CHANNEL channel);
  * @brief set volume of selected channel
  * 
  */
-WM_STATUS WMsetOutputVolume(wm8960_t *wm8960, WM_CHANNEL channel, uint8_t volume);
-WM_STATUS WMsetOutputMixerBoost(wm8960_t *wm8960, WM_CHANNEL channel, uint8_t boost);
-
 WM_STATUS WMsetInputMicGain(wm8960_t *wm8960, WM_CHANNEL channel, uint8_t gain);
 
 WM_STATUS WMsetInputLineGain(wm8960_t *wm8960, WM_CHANNEL channel, uint8_t gain);

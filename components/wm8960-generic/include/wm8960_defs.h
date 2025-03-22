@@ -5,6 +5,9 @@
  * WM8960 Register Defines
  */
 
+/* SYSCLK 12.288 MHz for 48kHz */
+/* SYSCLK 11.2896 MHz for 44.1kHz*/
+
 #define WM8960_CACHEREGNUM 	56
 
 #define WM8960_LINVOL		0x0
@@ -70,39 +73,75 @@
 #define WM8960_DCLKDIV			3
 #define WM8960_TOCLKSEL			4
 
-#define WM8960_SYSCLK_DIV_1		(0 << 1)
-#define WM8960_SYSCLK_DIV_2		(2 << 1)
-
-#define WM8960_SYSCLK_MCLK		(0 << 0)
-#define WM8960_SYSCLK_PLL		(1 << 0)
 #define WM8960_SYSCLK_AUTO		(2 << 0)
 
-#define WM8960_DAC_DIV_1		(0 << 3)
-#define WM8960_DAC_DIV_1_5		(1 << 3)
-#define WM8960_DAC_DIV_2		(2 << 3)
-#define WM8960_DAC_DIV_3		(3 << 3)
-#define WM8960_DAC_DIV_4		(4 << 3)
-#define WM8960_DAC_DIV_5_5		(5 << 3)
-#define WM8960_DAC_DIV_6		(6 << 3)
+/* WM8960_CLOCK1		0x04*/
+#define WM8960_SYSCLK_MCLK		(0x00)
+#define WM8960_SYSCLK_PLL		(0x01)
+#define WM8960_SYSCLK_DIV_1		(0x00)
+#define WM8960_SYSCLK_DIV_2		(0x04)
 
-#define WM8960_DCLK_DIV_1_5		(0 << 6)
-#define WM8960_DCLK_DIV_2		(1 << 6)
-#define WM8960_DCLK_DIV_3		(2 << 6)
-#define WM8960_DCLK_DIV_4		(3 << 6)
-#define WM8960_DCLK_DIV_6		(4 << 6)
-#define WM8960_DCLK_DIV_8		(5 << 6)
-#define WM8960_DCLK_DIV_12		(6 << 6)
-#define WM8960_DCLK_DIV_16		(7 << 6)
+#define WM8960_DAC_DIV_1		(0x00)
+#define WM8960_DAC_DIV_1_5		(0x08)
+#define WM8960_DAC_DIV_2		(0x10)
+#define WM8960_DAC_DIV_3		(0x18)
+#define WM8960_DAC_DIV_4		(0x20)
+#define WM8960_DAC_DIV_5_5		(0x28)
+#define WM8960_DAC_DIV_6		(0x30)
 
-#define WM8960_TOCLK_F19		(0 << 1)
-#define WM8960_TOCLK_F21		(1 << 1)
+#define WM8960_ADC_DIV_1		(0x00)
+#define WM8960_ADC_DIV_1_5		(0x40)
+#define WM8960_ADC_DIV_2		(0x80)
+#define WM8960_ADC_DIV_3		(0xc0)
+#define WM8960_ADC_DIV_4		(0x100)
+#define WM8960_ADC_DIV_5_5		(0x140)
+#define WM8960_ADC_DIV_6		(0x180)
 
-#define WM8960_OPCLK_DIV_1		(0 << 0)
-#define WM8960_OPCLK_DIV_2		(1 << 0)
-#define WM8960_OPCLK_DIV_3		(2 << 0)
-#define WM8960_OPCLK_DIV_4		(3 << 0)
-#define WM8960_OPCLK_DIV_5_5		(4 << 0)
-#define WM8960_OPCLK_DIV_6		(5 << 0)
+#define WM8960_CLOCK1_DEFAULT		(WM8960_SYSCLK_PLL | WM8960_SYSCLK_DIV_2)
+
+/* WM8960_CLOCK2		0x08*/
+
+#define WM8960_BCLK_DIV_1		(0x00)
+#define WM8960_BCLK_DIV_1_5		(0x01)
+#define WM8960_BCLK_DIV_2		(0x02)
+#define WM8960_BCLK_DIV_3		(0x03)
+#define WM8960_BCLK_DIV_4		(0x04)
+#define WM8960_BCLK_DIV_5_5		(0x05)
+#define WM8960_BCLK_DIV_6		(0x06)
+#define WM8960_BCLK_DIV_8		(0x07)
+#define WM8960_BCLK_DIV_11		(0x08)
+#define WM8960_BCLK_DIV_12		(0x09)
+#define WM8960_BCLK_DIV_16		(0x0a)
+#define WM8960_BCLK_DIV_22		(0x0b)
+#define WM8960_BCLK_DIV_24		(0x0c)
+#define WM8960_BCLK_DIV_32		(0x0d)
+
+#define WM8960_DCLK_DIV_1_5		(0x00)
+#define WM8960_DCLK_DIV_2		(0x40)
+#define WM8960_DCLK_DIV_3		(0x80)
+#define WM8960_DCLK_DIV_4		(0xc0)
+#define WM8960_DCLK_DIV_6		(0x100)
+#define WM8960_DCLK_DIV_8		(0x140)
+#define WM8960_DCLK_DIV_12		(0x180)
+#define WM8960_DCLK_DIV_16		(0xc0)
+
+#define WM8960_CLOCK2_DEFAULT		(WM8960_BCLK_DIV_4 | WM8960_DCLK_DIV_16)
+
+/* WM8960_PLL1		0x34 */
+#define WM8960_PLL_DIV_2		(0x10)
+#define WM8960_PLL_DIV_1		(0x00)
+
+#define WM8960_PLL_INTEGER		(0x00)
+#define WM8960_PLL_FRACTION		(0x20)
+
+#define WM8960_OPCLK_DIV_1		(0x00)
+#define WM8960_OPCLK_DIV_2		(0x40)
+#define WM8960_OPCLK_DIV_3		(0x80)
+#define WM8960_OPCLK_DIV_4		(0xc0)
+#define WM8960_OPCLK_DIV_5_5		(0x100)
+#define WM8960_OPCLK_DIV_6		(0x140)
+
+#define PLL				0x3126E8
 
 /* 2 - Wire Communication Protocol */
 #define I2S_BIT_WRITE			(0x0)
@@ -121,6 +160,8 @@
 #define WM8960_VMID_STANDBY		(0x100)		//2x 250k ohm
 #define WM8960_VMID_STARTUP		(0x180)		//2x 5k ohm
 
+#define WM8960_POWER1_DEFAULT		(WM8960_VMID_NORMAL | WM8960_VREF)
+
 //WM8960_POWER2		0x1a
 #define WM8960_PWR_PLL			(0x01)
 #define WM8960_PWR_OUT3			(0x02)
@@ -131,18 +172,24 @@
 #define WM8960_PWR_DACR			(0x80)
 #define WM8960_PWR_DACL			(0x100)
 
+#define WM8960_POWER2_DEFAULT		(WM8960_PWR_PLL | WM8960_PWR_DACR | \
+					WM8960_PWR_DACL)
+
+
 //WM8960_POWER3		0x2f
 #define WM8960_PWR_RMIX			(0x04)
 #define WM8960_PWR_LMIX			(0x08)
 #define WM8960_PWR_RMIC			(0x10)
 #define WM8960_PWR_LMIC			(0x20)
 
+#define WM8960_POWER3_DEFAULT_IN	(WM8960_PWR_RMIC | WM8960_PWR_LMIC)
+#define WM8960_POWER3_DEFAULT_OUT	(WM8960_PWR_LMIX | WM8960_PWR_RMIX)
+
 // DAC Volume register 0xA 0xB
 #define WM_DAC_GAIN(dB)			((uint8_t) (2 * dB + 255))
 #define WM8960_DACVU			(0x100)
 
 // Left + Right Mixer 0x22, 0x25
-/* values are negative */
 #define WM8960_MIX_0dB			(0x00)
 #define WM8960_MIX_NEG_3dB		(0x10)
 #define WM8960_MIX_NEG_6dB		(0x20)
@@ -152,28 +199,48 @@
 #define WM8960_MIX_NEG_18dB		(0x60)
 #define WM8960_MIX_NEG_21dB		(0x70)
 
+#define WM_MIX_GAIN(dB)			((uint8_t) (dB / (-3)))
+
 #define WM8960_MIX_I2O			(0x80)	// input 3 to mixer
 #define WM8960_MIX_D2O			(0x100)	// dac to mixer 
 
-// 0x17
+// WM8960_ADDCTL1 		0x17
+#define WM8960_TIMEOUT			(0x01)
+#define WM8960_TIMEOUT_CLK		(0x20)
 #define WM8960_MIX_MONO			(0x10)
 
 // 0x26, 0x27
 #define WM8960_2MO			(0x80)
 
-// 0x5 ADCDACCTL1
-#define ADCHPD				(0x01)	//ADC highpass filter
-//deemphasis is in enums
-#define DACMU				(0x08)
-// polarity is in enums
+// ADCDACCTL1 0x05
+#define WM8960_ADCHPD			(0x01)	//ADC highpass filter
+/* deemphasis enums */
+#define WM8960_DACMU			(0x08)
+/* polarity enums */
 #define WM8960_DAC_DIV_2		(0x80)	//6 dB attenuate
 
-// 0x6 ADCDACCTL2
+// ADCDACCTL2 0x06
+#define WM8960_DACSLOPE			(0x02)
+#define WM8960_DACMR			(0x04)	//DAC mute rate
+#define WM8960_DACSMM			(0x08)	//DAC soft mute mode
+/* polarity enums */
 
+// 0x7 IFACE1
+/* format enums */
+/* word lengthenums */
+#define WM8960_LRP			(0x10)	//LRCLK polarity
+#define WM8960_DACSWAP			(0x20)
+#define WM8960_MASTER			(0x40)
+#define WM8960_BCLKINV			(0x80)
+#define WM8960_ADCSWAP			(0x100)
 
 // 3D enhacement
 #define WM8960_3D_HIGHPASS		(0x20)
 #define WM8960_3D_LOWPASS		(0x40)
+
+/* WM8960_CLASSD2		0x33 */
+#define WM8960_DCGAIN_MAX		(0x24)
+#define WM8960_ACGAIN_MAX		(0x05)
 
 #define WM8960_MEMORY_RESERVED		(0xFFFF)
 #define WM8960_MEMORY_DEFAULT		(regmap_t){ \
