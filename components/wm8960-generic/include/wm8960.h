@@ -44,11 +44,25 @@ typedef enum WM_DEEMPH {
 
 // enumerations for inverting dac channels polarity 
 typedef enum WM_POLARITY {
-	WM_DACL_EN = (1 << 5),
-	WM_DACR_EN = (1 << 6),
-	WM_DACLR_EN = (1 << 5) | (1 << 6),
-	WM_DACLR_DIS = 0x0,
+	WM_INVERT_L = 0x20,
+	WM_INVERT_R = 0x40,
+	WM_INVERT_LR = 0x60,
+	WM_POLARITY_NORMAL = 0x0,
 } WM_POLARITY;
+
+typedef enum WM_WORD_LENGTH {
+	WM_WORD_16BIT = 0x00,
+	WM_WORD_20BIT = 0x04,
+	WM_WORD_24BIT = 0x08,
+	WM_WORD_32BIT = 0x0c,
+} WM_WORD_LENGTH;
+
+typedef enum WM_DATA_FMT {
+	WM_FMT_RIGHT = 0x0,
+	WM_FMT_LEFT = 0x01,
+	WM_FMT_I2S = 0x02,
+	WM_FMT_DSP = 0x03,
+} WM_DATA_FMT;
 
 /* struct for storing memory copy since wm8960 does not support reading registers
 *includes reserved registers
@@ -58,6 +72,7 @@ typedef struct regmap {
 } regmap_t;
 
 typedef struct reverb {
+	WM_BOOL enable;
 	WM_BOOL highPass;
 	WM_BOOL lowPass;
 	uint8_t depth;
@@ -66,20 +81,17 @@ typedef struct reverb {
 typedef struct wm8960_input_ctl {
 	WM_CHANNEL channnel;
 	WM_BOOL noiseGate;
-	uint8_t pgaLeft;
-	uint8_t pgaRight;
+	uint8_t pga;
 	WM_BOOL acl;		//automatic level control
 } wm8960_input_ctl_t;
 
 typedef struct wm8960_output_ctl {
 	WM_CHANNEL channnel;
-	WM_BOOL speaker;
 	WM_BOOL headphone;
 	WM_BOOL classD;
-	uint8_t reverb;
 	WM_DEEMPH deemph;
 	WM_BOOL monoMix;
-	reverb_t *reverb;
+	reverb_t reverb;
 	int frequency;
 } wm8960_output_ctl_t;
 
@@ -120,7 +132,7 @@ WM_STATUS WMreset(wm8960_t *wm8960);
 
 WM_STATUS WMsetPLL(wm8960_t *wm8960, uint8_t integerPart, uint32_t fractionalPart);
 
-WM_STATUS WMmanagePower(wm8960_t *wm8960, int32_t powerMode);
+WM_STATUS WMsetMixVolume(wm8960_t *wm8960, uint16_t flags);
 
 /**
  * @brief read data from channel
@@ -130,7 +142,7 @@ WM_STATUS WMmanagePower(wm8960_t *wm8960, int32_t powerMode);
  * @param data 
  * @return WM_STATUS 
  */
-WM_STATUS WMreadChannel(wm8960_t *wm8960, WM_CHANNEL channel, uint8_t *data);
+WM_STATUS WMreadChannel(wm8960_t *wm8960, uint8_t *data);
 
 /**
  * @brief mute selected channel

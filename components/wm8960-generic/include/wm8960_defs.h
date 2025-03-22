@@ -161,12 +161,19 @@
 // 0x26, 0x27
 #define WM8960_2MO			(0x80)
 
-// 0x5
+// 0x5 ADCDACCTL1
+#define ADCHPD				(0x01)	//ADC highpass filter
+//deemphasis is in enums
+#define DACMU				(0x08)
+// polarity is in enums
 #define WM8960_DAC_DIV_2		(0x80)	//6 dB attenuate
+
+// 0x6 ADCDACCTL2
+
 
 // 3D enhacement
 #define WM8960_3D_HIGHPASS		(0x20)
-#define WM8960_3D_LOWHPASS		(0x40)
+#define WM8960_3D_LOWPASS		(0x40)
 
 #define WM8960_MEMORY_RESERVED		(0xFFFF)
 #define WM8960_MEMORY_DEFAULT		(regmap_t){ \
@@ -226,6 +233,12 @@
 					.reg[0x35] = 0x0031, \
 					.reg[0x36] = 0x0026, \
 					.reg[0x37] = 0x00e9, }
+
+#define WM8960_REVERB_DEFAULT (reverb_t) { \
+					.enable = WM_FALSE, \
+					.highPass = WM_FALSE, \
+					.lowPass = WM_FALSE, \
+					.depth = 0, }
 
 
 #endif
