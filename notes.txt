@@ -1,0 +1,8 @@
+for beginning:
+
+# I2S mode SLAVE (obtain frequencies from MCU) 
+
+# I2S 44.1kHz, 16bit
+
+1.	configure clocks and data fmt
+2.	send simple sine wave

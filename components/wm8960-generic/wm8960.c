@@ -57,23 +57,30 @@ WM_STATUS WMinit(wm8960_t *wm8960){
 		return WM_ERROR_INVALID_PARAM;
 	}
 
-	/* power up */
+	/* power up main source */
 	WM_ERROR_CHECK(write(wm8960, WM8960_POWER1, WM8960_POWER1_DEFAULT));
 
+	/* power up PLL */
+	WM_ERROR_CHECK(write(wm8960, WM8960_POWER2, WM8960_POWER2_DEFAULT));
+
+	/* select PLL clock */
+	WM_ERROR_CHECK(write(wm8960, WM8960_CLOCK1, WM8960_CLOCK1_DEFAULT));
+	WM_ERROR_CHECK(write(wm8960, WM8960_CLOCK2, WM8960_CLOCK2_DEFAULT_SLAVE));
+
 	/* start clocks with 24 MHz crystal, refer to documentation */
-	WM_ERROR_CHECK(write(wm8960, WM8960_PLL1, 0x08));
-	WM_ERROR_CHECK(write(wm8960, WM8960_PLL2, 0x31));
-	WM_ERROR_CHECK(write(wm8960, WM8960_PLL3, 0x26));
-	WM_ERROR_CHECK(write(wm8960, WM8960_PLL4, 0xe8));
+	WM_ERROR_CHECK(write(wm8960, WM8960_PLL1, 0x07 | WM8960_PLL1_DEFAULT));
+	WM_ERROR_CHECK(write(wm8960, WM8960_PLL2, 0x86));
+	WM_ERROR_CHECK(write(wm8960, WM8960_PLL3, 0xC2));
+	WM_ERROR_CHECK(write(wm8960, WM8960_PLL4, 0x26));
 
-	/* audio fmt */
-	uint16_t flag = wm8960->ctl.fmt | wm8960->ctl.word;
-	WM_ERROR_CHECK(setBits(wm8960, WM8960_IFACE1, flag));
+	/* set slave mode and audio FMT 16 bit*/
+	WM_ERROR_CHECK(write(wm8960, WM8960_IFACE1, WM8960_IFACE1_DEFAULT_16BIT));
 
+	uint16_t flag;
 	/* init audio recording */
 	if(wm8960->ctl.input){
-		// start power
-		flag = WM8960_VREF | WM8960_PWR_ADCL | WM8960_PWR_ADCR;
+		/* power up ADC and MIC */
+		flag = WM8960_PWR_ADCL | WM8960_PWR_ADCR;
 		WM_ERROR_CHECK(setBits(wm8960, WM8960_POWER1, flag));
 
 		flag = WM8960_PWR_LMIC | WM8960_PWR_RMIC;
@@ -82,15 +89,12 @@ WM_STATUS WMinit(wm8960_t *wm8960){
 
 	/* init audio playback */
 	if(wm8960->ctl.output){
-		/* power up */
-		flag = WM8960_POWER2_DEFAULT;
-		WM_ERROR_CHECK(setBits(wm8960, WM8960_POWER2, flag));
-
+		/* power up MIX*/
 		flag = WM8960_POWER3_DEFAULT_OUT;
 		WM_ERROR_CHECK(setBits(wm8960, WM8960_POWER3, flag));
 
 		/* route DAC to mixer */
-		flag = WM8960_MIX_D2O;
+		flag = WM8960_MIX_D2O | WM_MIX_GAIN(-3);
 		WM_ERROR_CHECK(setBits(wm8960, WM8960_LOUTMIX, flag));
 		WM_ERROR_CHECK(setBits(wm8960, WM8960_ROUTMIX, flag));
 

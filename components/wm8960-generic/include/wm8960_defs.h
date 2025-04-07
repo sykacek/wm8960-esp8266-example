@@ -78,6 +78,7 @@
 /* WM8960_CLOCK1		0x04*/
 #define WM8960_SYSCLK_MCLK		(0x00)
 #define WM8960_SYSCLK_PLL		(0x01)
+
 #define WM8960_SYSCLK_DIV_1		(0x00)
 #define WM8960_SYSCLK_DIV_2		(0x04)
 
@@ -125,7 +126,8 @@
 #define WM8960_DCLK_DIV_12		(0x180)
 #define WM8960_DCLK_DIV_16		(0xc0)
 
-#define WM8960_CLOCK2_DEFAULT		(WM8960_BCLK_DIV_4 | WM8960_DCLK_DIV_16)
+#define WM8960_CLOCK2_DEFAULT_MASTER	(WM8960_BCLK_DIV_4 | WM8960_DCLK_DIV_16)
+#define WM8960_CLOCK2_DEFAULT_SLAVE	(WM8960_DCLK_DIV_16)
 
 /* WM8960_PLL1		0x34 */
 #define WM8960_PLL_DIV_2		(0x10)
@@ -141,15 +143,15 @@
 #define WM8960_OPCLK_DIV_5_5		(0x100)
 #define WM8960_OPCLK_DIV_6		(0x140)
 
-#define PLL				0x3126E8
+#define WM8960_PLL1_DEFAULT		(WM8960_PLL_DIV_2 | WM8960_PLL_FRACTION)
 
-/* 2 - Wire Communication Protocol */
-#define I2S_BIT_WRITE			(0x0)
-#define I2S_BIT_READ			(0x1)
+/* with 24 MHz crystal for 44.1kHz playback */
+#define PLL_48KHZ			0x3126E8
+#define PLL_441KHZ			0x86C226
 
 /* Power Managament flags */
 //WM8960_POWER1		0x19
-#define WM8960_MASTER_CLOCK		(0x01)
+#define WM8960_MCLK_DIS			(0x01)
 #define WM8960_PWR_MIC_BIAS		(0x02)
 #define WM8960_PWR_ADCR			(0x04)
 #define WM8960_PWR_ADCL			(0x08)
@@ -174,7 +176,8 @@
 
 #define WM8960_POWER2_DEFAULT		(WM8960_PWR_PLL | WM8960_PWR_DACR | \
 					WM8960_PWR_DACL | WM8960_PWR_LOUT1 | \
-					WM8960_PWR_ROUT1)
+					WM8960_PWR_ROUT1 | WM8960_PWR_SPKR | \
+					WM8960_PWR_SPKL)
 
 
 //WM8960_POWER3		0x2f
@@ -244,15 +247,18 @@
 // WM8960_IFACE1		0x07
 /* format enums */
 /* word lengthenums */
-#define WM8960_LRP			(0x10)	//LRCLK polarity
-#define WM8960_DACSWAP			(0x20)
-#define WM8960_MASTER			(0x40)
-#define WM8960_BCLKINV			(0x80)
-#define WM8960_ADCSWAP			(0x100)
+#define WM8960_IFACE_LRP			(0x10)	//LRCLK polarity
+#define WM8960_IFACE_DACSWAP			(0x20)
+#define WM8960_IFACE_MASTER			(0x40)
+#define WM8960_IFACE_SLAVE			(0x00)
+#define WM8960_IFACE_BCLKINV			(0x80)
+#define WM8960_IFACE_ADCSWAP			(0x100)
+
+#define WM8960_IFACE1_DEFAULT_16BIT		(WM8960_IFACE_SLAVE)
 
 // WM8960_IFACE2		0x09
-#define WM8960_LOOPBACK			(0x01)
-#define WM8960_ALRCK_GPIO		(0x40)
+#define WM8960_IFACE_LOOPBACK			(0x01)
+#define WM8960_IFACE_ALRCK_GPIO		(0x40)
 
 
 // WM8960_3D 		3D enhacement
